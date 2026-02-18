@@ -35,14 +35,13 @@ export function VoiceCapture() {
 
   const { level: audioLevel, startMonitoring, stopMonitoring } = useAudioLevel();
 
-  // Wrap startRecording to also monitor audio level
   const handleStartRecording = useCallback(async () => {
     await startRecording();
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       startMonitoring(stream);
     } catch {
-      // Audio level monitoring is optional, don't block recording
+      // Audio level monitoring is optional
     }
   }, [startRecording, startMonitoring]);
 
@@ -63,7 +62,6 @@ export function VoiceCapture() {
         !e.altKey &&
         !isHoldingVRef.current
       ) {
-        // Don't trigger if user is typing in an input/textarea
         const tag = (e.target as HTMLElement)?.tagName;
         if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
 
@@ -127,29 +125,59 @@ export function VoiceCapture() {
     [isProcessing, clearTranscript],
   );
 
-  const handleAccept = useCallback(() => {
-    if (proposedAction) {
-      setActionLog((prev) => [
-        {
-          transcript: sentTranscript,
-          action: proposedAction,
-          status: "accepted",
-        },
-        ...prev,
-      ]);
-    }
-    setProposedAction(null);
-    setSentTranscript("");
-  }, [proposedAction, sentTranscript]);
+  const handleAccept = useCallback(
+    async (editedData: Record<string, unknown>) => {
+      if (!proposedAction?.id) {
+        // No capture ID — fallback to local log
+        if (proposedAction) {
+          setActionLog((prev) => [
+            { transcript: sentTranscript, action: proposedAction, status: "accepted" },
+            ...prev,
+          ]);
+        }
+        setProposedAction(null);
+        setSentTranscript("");
+        return;
+      }
 
-  const handleReject = useCallback(() => {
+      try {
+        await fetch(`/api/captures/${proposedAction.id}/accept`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ structured_data: editedData }),
+        });
+        setActionLog((prev) => [
+          { transcript: sentTranscript, action: proposedAction, status: "accepted" },
+          ...prev,
+        ]);
+      } catch {
+        // Still log locally on error
+        if (proposedAction) {
+          setActionLog((prev) => [
+            { transcript: sentTranscript, action: proposedAction, status: "accept_failed" },
+            ...prev,
+          ]);
+        }
+      }
+      setProposedAction(null);
+      setSentTranscript("");
+    },
+    [proposedAction, sentTranscript],
+  );
+
+  const handleReject = useCallback(async () => {
+    if (proposedAction?.id) {
+      try {
+        await fetch(`/api/captures/${proposedAction.id}/reject`, {
+          method: "POST",
+        });
+      } catch {
+        // Ignore — reject is best-effort
+      }
+    }
     if (proposedAction) {
       setActionLog((prev) => [
-        {
-          transcript: sentTranscript,
-          action: proposedAction,
-          status: "rejected",
-        },
+        { transcript: sentTranscript, action: proposedAction, status: "rejected" },
         ...prev,
       ]);
     }

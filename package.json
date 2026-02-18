@@ -6,7 +6,10 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "keywords": [],
   "author": "",
@@ -18,6 +21,7 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "bmad-method": "^6.0.0-Beta.8",
+    "drizzle-kit": "^0.31.9",
     "eslint": "^9.39.2",
     "eslint-config-next": "^16.1.6",
     "inquirer": "^9.3.8",
@@ -27,8 +31,10 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.75.0",
     "@deepgram/sdk": "^4.11.3",
+    "drizzle-orm": "^0.45.1",
     "next": "^15.5.12",
     "openai": "^6.22.0",
+    "postgres": "^3.4.8",
     "react": "^19.2.4",
     "react-dom": "^19.2.4"
   }

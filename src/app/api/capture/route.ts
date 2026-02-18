@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
-import {
-  classifyIntent,
-  type CaptureContext,
-} from "@/lib/llm/classify-intent";
+import { extractStructured } from "@/lib/llm/extract-structured";
+import { createCapture } from "@/lib/db/queries";
+import type { CaptureContext } from "@/lib/llm/classify-intent";
 
 export async function POST(req: NextRequest) {
   try {
@@ -26,11 +25,16 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const result = await classifyIntent(transcript, context ?? {});
-    return NextResponse.json(result);
+    const extraction = await extractStructured(transcript, context ?? {});
+    const capture = await createCapture(transcript, extraction);
+
+    return NextResponse.json({
+      id: capture.id,
+      ...extraction,
+    });
   } catch {
     return NextResponse.json(
-      { error: "Failed to classify intent" },
+      { error: "Failed to process capture" },
       { status: 500 },
     );
   }
