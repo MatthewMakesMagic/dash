@@ -19,9 +19,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!process.env.ANTHROPIC_API_KEY) {
+    if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
-        { error: "Anthropic API key not configured" },
+        { error: "OpenAI API key not configured" },
         { status: 503 },
       );
     }

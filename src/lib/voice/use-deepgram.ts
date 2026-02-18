@@ -101,7 +101,7 @@ export function useDeepgram(options: UseDeepgramOptions = {}) {
 
       const wsUrl = `wss://api.deepgram.com/v1/listen?${params.toString()}`;
 
-      // 4. Connect to Deepgram directly with the temporary token
+      // 4. Connect to Deepgram with token via WebSocket subprotocol
       const socket = new WebSocket(wsUrl, ["token", token]);
       socketRef.current = socket;
 
@@ -145,12 +145,14 @@ export function useDeepgram(options: UseDeepgramOptions = {}) {
         }
       };
 
-      socket.onerror = () => {
+      socket.onerror = (e) => {
+        console.error("Deepgram WS error:", e);
         onErrorRef.current?.("Deepgram connection error");
         cleanup();
       };
 
-      socket.onclose = () => {
+      socket.onclose = (e) => {
+        console.log("Deepgram WS closed:", e.code, e.reason);
         setIsConnected(false);
         onEndRef.current?.();
       };

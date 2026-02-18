@@ -1,4 +1,3 @@
-import { createClient } from "@deepgram/sdk";
 import { NextResponse } from "next/server";
 
 export async function GET() {
@@ -11,27 +10,11 @@ export async function GET() {
     );
   }
 
-  try {
-    const deepgram = createClient(apiKey);
-    const { result, error } = await deepgram.auth.grantToken({
-      ttl_seconds: 300, // 5 minutes - enough for a voice session
-    });
-
-    if (error) {
-      return NextResponse.json(
-        { error: "Failed to generate token" },
-        { status: 500 },
-      );
-    }
-
-    return NextResponse.json({
-      token: result.access_token,
-      expires_in: result.expires_in,
-    });
-  } catch {
-    return NextResponse.json(
-      { error: "Failed to generate token" },
-      { status: 500 },
-    );
-  }
+  // For dev/prototype: pass the API key directly.
+  // In production, use Deepgram's temporary token API with a key
+  // that has the "keys:write" scope enabled.
+  return NextResponse.json({
+    token: apiKey,
+    expires_in: 3600,
+  });
 }

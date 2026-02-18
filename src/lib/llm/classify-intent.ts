@@ -1,4 +1,4 @@
-import { getAnthropicClient } from "./client";
+import { getOpenAIClient } from "./client";
 
 export interface CaptureContext {
   current_view?: string;
@@ -45,7 +45,7 @@ export async function classifyIntent(
   transcript: string,
   context: CaptureContext,
 ): Promise<ClassifiedIntent> {
-  const anthropic = getAnthropicClient();
+  const openai = getOpenAIClient();
 
   const timeOfDay = context.time
     ? new Date(context.time).toLocaleTimeString("en-US", {
@@ -62,15 +62,16 @@ export async function classifyIntent(
 
 Transcript: "${transcript}"`;
 
-  const response = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
+  const response = await openai.chat.completions.create({
+    model: "gpt-4o-mini",
     max_tokens: 256,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: userMessage }],
+    messages: [
+      { role: "system", content: SYSTEM_PROMPT },
+      { role: "user", content: userMessage },
+    ],
   });
 
-  const text =
-    response.content[0].type === "text" ? response.content[0].text : "";
+  const text = response.choices[0]?.message?.content ?? "";
 
   // Extract JSON from response (handle potential markdown wrapping)
   const jsonMatch = text.match(/\{[\s\S]*\}/);
