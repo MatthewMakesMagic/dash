@@ -14,11 +14,11 @@ interface Task {
   created_at: string;
 }
 
-const priorityColors: Record<string, string> = {
-  urgent: "bg-red-600/20 text-red-400",
-  high: "bg-orange-600/20 text-orange-400",
-  medium: "bg-yellow-600/20 text-yellow-400",
-  low: "bg-neutral-600/20 text-neutral-400",
+const priorityChip: Record<string, string> = {
+  urgent: "chip-red",
+  high: "chip-orange",
+  medium: "chip-amber",
+  low: "badge-glass text-[var(--text-muted)]",
 };
 
 const columns = [
@@ -68,7 +68,7 @@ export default function TasksPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center pt-24 text-neutral-500">
+      <div className="flex items-center justify-center pt-24 text-[var(--text-muted)]">
         Loading...
       </div>
     );
@@ -76,43 +76,47 @@ export default function TasksPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-semibold">Tasks</h1>
+      <h1 className="mb-1 text-2xl font-bold font-[family-name:var(--font-mono)]">
+        <span className="gradient-text">Tasks</span>
+      </h1>
+      <div className="gradient-line mb-6 w-16" />
+
       <div className="grid grid-cols-3 gap-4">
         {columns.map((col) => {
           const colTasks = tasks.filter((t) => t.status === col.key);
           return (
             <div key={col.key}>
-              <h2 className="mb-3 text-sm font-medium text-neutral-400">
+              <h2 className="mb-3 text-sm font-medium text-[var(--text-secondary)]">
                 {col.label}{" "}
-                <span className="text-neutral-600">({colTasks.length})</span>
+                <span className="text-[var(--text-muted)]">({colTasks.length})</span>
               </h2>
               <div className="space-y-2">
                 {colTasks.map((task) => (
                   <div
                     key={task.id}
-                    className="rounded-lg border border-neutral-800 bg-neutral-900 p-3"
+                    className="glass-card rounded-xl p-3"
                   >
-                    <p className="mb-2 text-sm font-medium text-neutral-100">
+                    <p className="mb-2 text-sm font-medium text-[var(--text-primary)]">
                       {task.title}
                     </p>
                     <div className="mb-2 flex flex-wrap items-center gap-1.5">
                       <span
-                        className={`rounded px-1.5 py-0.5 text-[10px] font-medium ${priorityColors[task.priority] ?? priorityColors.medium}`}
+                        className={`rounded-md px-1.5 py-0.5 text-[10px] font-medium ${priorityChip[task.priority] ?? priorityChip.medium}`}
                       >
                         {task.priority}
                       </span>
                       {task.due_date && (
-                        <span className="text-[10px] text-neutral-500">
+                        <span className="text-[10px] text-[var(--text-muted)]">
                           Due {task.due_date}
                         </span>
                       )}
                       {task.recurrence && (
-                        <span className="rounded bg-purple-600/20 px-1.5 py-0.5 text-[10px] font-medium text-purple-400">
+                        <span className="chip-fuchsia rounded-md px-1.5 py-0.5 text-[10px] font-medium">
                           {task.recurrence}
                         </span>
                       )}
                       {task.project && (
-                        <span className="text-[10px] text-neutral-500">
+                        <span className="text-[10px] text-[var(--text-muted)]">
                           {task.project}
                         </span>
                       )}
@@ -126,7 +130,7 @@ export default function TasksPage() {
                               col.key === "done" ? "in_progress" : "todo",
                             )
                           }
-                          className="rounded px-2 py-0.5 text-[10px] text-neutral-400 transition hover:bg-neutral-800 hover:text-neutral-200"
+                          className="rounded-md px-2 py-0.5 text-[10px] text-[var(--text-muted)] transition hover:bg-[rgba(255,255,255,0.06)] hover:text-[var(--text-primary)]"
                         >
                           {col.key === "done" ? "In Progress" : "To Do"}
                         </button>
@@ -139,7 +143,7 @@ export default function TasksPage() {
                               col.key === "todo" ? "in_progress" : "done",
                             )
                           }
-                          className="rounded px-2 py-0.5 text-[10px] text-neutral-400 transition hover:bg-neutral-800 hover:text-neutral-200"
+                          className="rounded-md px-2 py-0.5 text-[10px] text-[var(--text-muted)] transition hover:bg-[rgba(255,255,255,0.06)] hover:text-[var(--text-primary)]"
                         >
                           {col.key === "todo" ? "In Progress" : "Done"}
                         </button>
@@ -148,9 +152,9 @@ export default function TasksPage() {
                   </div>
                 ))}
                 {colTasks.length === 0 && (
-                  <p className="py-4 text-center text-xs text-neutral-600">
+                  <div className="glass rounded-xl py-8 text-center text-xs text-[var(--text-muted)]">
                     No tasks
-                  </p>
+                  </div>
                 )}
               </div>
             </div>

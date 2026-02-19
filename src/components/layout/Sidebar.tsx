@@ -55,12 +55,16 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="flex w-56 shrink-0 flex-col border-r border-neutral-800 bg-neutral-950">
+    <aside className="glass-sidebar flex w-56 shrink-0 flex-col">
       <div className="flex h-14 items-center px-4">
-        <Link href="/voice" className="text-lg font-semibold text-neutral-100">
-          Dash
+        <Link href="/voice" className="font-[family-name:var(--font-mono)] text-lg font-bold">
+          <span className="gradient-text">Dash</span>
         </Link>
       </div>
+
+      {/* Gradient line accent */}
+      <div className="gradient-line mx-4 mb-2" />
+
       <nav className="flex-1 space-y-1 px-2 py-2">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -68,18 +72,27 @@ export function Sidebar() {
             <Link
               key={item.href}
               href={item.href}
-              className={`flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition ${
+              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-all duration-200 ${
                 isActive
-                  ? "bg-neutral-800 text-neutral-100"
-                  : "text-neutral-400 hover:bg-neutral-900 hover:text-neutral-200"
+                  ? "glass-card text-[var(--text-primary)]"
+                  : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[rgba(255,255,255,0.04)]"
               }`}
             >
-              {item.icon}
+              <span className={isActive ? "text-[var(--dash-fuchsia)]" : ""}>
+                {item.icon}
+              </span>
               {item.label}
             </Link>
           );
         })}
       </nav>
+
+      {/* Bottom brand mark */}
+      <div className="px-4 py-3">
+        <p className="text-[10px] tracking-widest uppercase text-[var(--text-muted)]">
+          Voice-first productivity
+        </p>
+      </div>
     </aside>
   );
 }

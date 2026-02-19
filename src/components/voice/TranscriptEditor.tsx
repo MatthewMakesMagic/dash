@@ -59,12 +59,12 @@ export function TranscriptEditor({
           isRecording ? "Listening..." : "Press the mic button and speak..."
         }
         rows={3}
-        className="w-full resize-none rounded-lg border border-neutral-700 bg-neutral-900 px-4 py-3 text-neutral-100 placeholder:text-neutral-500 focus:border-blue-500 focus:outline-none"
+        className="input-glass w-full resize-none rounded-xl px-4 py-3 text-[var(--text-primary)]"
         aria-label="Voice transcript"
         aria-live="polite"
       />
       {interimText && (
-        <div className="pointer-events-none absolute bottom-2 right-3 text-xs text-neutral-500">
+        <div className="pointer-events-none absolute bottom-2 right-3 text-xs text-[var(--text-muted)]">
           interim
         </div>
       )}

@@ -30,6 +30,16 @@ const modeLabels: Record<string, string> = {
   uncertain: "Uncertain",
 };
 
+const modeChipClass: Record<string, string> = {
+  task_capture: "chip-orange",
+  reflection: "chip-violet",
+  conversation: "chip-amber",
+  command: "chip-cyan",
+  goal_setting: "chip-green",
+  status_update: "chip-cyan",
+  uncertain: "badge-glass text-[var(--text-secondary)]",
+};
+
 function TaskFields({
   data,
   onChange,
@@ -40,23 +50,21 @@ function TaskFields({
   return (
     <div className="space-y-2">
       <div>
-        <label className="mb-1 block text-xs text-neutral-400">Title</label>
+        <label className="mb-1 block text-xs text-[var(--text-muted)]">Title</label>
         <input
           type="text"
           value={(data.title as string) ?? ""}
           onChange={(e) => onChange({ ...data, title: e.target.value })}
-          className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 focus:border-blue-500 focus:outline-none"
+          className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
         />
       </div>
       <div className="flex gap-2">
         <div className="flex-1">
-          <label className="mb-1 block text-xs text-neutral-400">
-            Priority
-          </label>
+          <label className="mb-1 block text-xs text-[var(--text-muted)]">Priority</label>
           <select
             value={(data.priority as string) ?? "medium"}
             onChange={(e) => onChange({ ...data, priority: e.target.value })}
-            className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 focus:border-blue-500 focus:outline-none"
+            className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
           >
             <option value="low">Low</option>
             <option value="medium">Medium</option>
@@ -65,22 +73,20 @@ function TaskFields({
           </select>
         </div>
         <div className="flex-1">
-          <label className="mb-1 block text-xs text-neutral-400">
-            Due Date
-          </label>
+          <label className="mb-1 block text-xs text-[var(--text-muted)]">Due Date</label>
           <input
             type="date"
             value={(data.due_date as string) ?? ""}
             onChange={(e) =>
               onChange({ ...data, due_date: e.target.value || null })
             }
-            className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 focus:border-blue-500 focus:outline-none"
+            className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
           />
         </div>
       </div>
       <div className="flex gap-2">
         <div className="flex-1">
-          <label className="mb-1 block text-xs text-neutral-400">Project</label>
+          <label className="mb-1 block text-xs text-[var(--text-muted)]">Project</label>
           <input
             type="text"
             value={(data.project as string) ?? ""}
@@ -88,17 +94,17 @@ function TaskFields({
               onChange({ ...data, project: e.target.value || null })
             }
             placeholder="Optional"
-            className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 placeholder:text-neutral-600 focus:border-blue-500 focus:outline-none"
+            className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
           />
         </div>
         <div className="flex-1">
-          <label className="mb-1 block text-xs text-neutral-400">Recurrence</label>
+          <label className="mb-1 block text-xs text-[var(--text-muted)]">Recurrence</label>
           <select
             value={(data.recurrence as string) ?? ""}
             onChange={(e) =>
               onChange({ ...data, recurrence: e.target.value || null })
             }
-            className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 focus:border-blue-500 focus:outline-none"
+            className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
           >
             <option value="">None</option>
             <option value="daily">Daily</option>
@@ -109,14 +115,14 @@ function TaskFields({
       </div>
       {(data.recurrence as string) && (
         <div>
-          <label className="mb-1 block text-xs text-neutral-400">Recurrence End</label>
+          <label className="mb-1 block text-xs text-[var(--text-muted)]">Recurrence End</label>
           <input
             type="date"
             value={(data.recurrence_end as string) ?? ""}
             onChange={(e) =>
               onChange({ ...data, recurrence_end: e.target.value || null })
             }
-            className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 focus:border-blue-500 focus:outline-none"
+            className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
           />
         </div>
       )}
@@ -134,17 +140,17 @@ function ReflectionFields({
   return (
     <div className="space-y-2">
       <div>
-        <label className="mb-1 block text-xs text-neutral-400">Summary</label>
+        <label className="mb-1 block text-xs text-[var(--text-muted)]">Summary</label>
         <textarea
           value={(data.summary as string) ?? ""}
           onChange={(e) => onChange({ ...data, summary: e.target.value })}
           rows={2}
-          className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 focus:border-blue-500 focus:outline-none"
+          className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
         />
       </div>
       <div className="flex gap-2">
         <div className="flex-1">
-          <label className="mb-1 block text-xs text-neutral-400">Mood</label>
+          <label className="mb-1 block text-xs text-[var(--text-muted)]">Mood</label>
           <input
             type="text"
             value={(data.mood as string) ?? ""}
@@ -152,11 +158,11 @@ function ReflectionFields({
               onChange({ ...data, mood: e.target.value || null })
             }
             placeholder="e.g. energized, calm"
-            className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 placeholder:text-neutral-600 focus:border-blue-500 focus:outline-none"
+            className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
           />
         </div>
         <div className="flex-1">
-          <label className="mb-1 block text-xs text-neutral-400">Tags</label>
+          <label className="mb-1 block text-xs text-[var(--text-muted)]">Tags</label>
           <input
             type="text"
             value={
@@ -174,7 +180,7 @@ function ReflectionFields({
               })
             }
             placeholder="comma separated"
-            className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 placeholder:text-neutral-600 focus:border-blue-500 focus:outline-none"
+            className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
           />
         </div>
       </div>
@@ -192,19 +198,17 @@ function GoalFields({
   return (
     <div className="space-y-2">
       <div>
-        <label className="mb-1 block text-xs text-neutral-400">Title</label>
+        <label className="mb-1 block text-xs text-[var(--text-muted)]">Title</label>
         <input
           type="text"
           value={(data.title as string) ?? ""}
           onChange={(e) => onChange({ ...data, title: e.target.value })}
-          className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 focus:border-blue-500 focus:outline-none"
+          className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
         />
       </div>
       <div className="flex gap-2">
         <div className="flex-1">
-          <label className="mb-1 block text-xs text-neutral-400">
-            Timeframe
-          </label>
+          <label className="mb-1 block text-xs text-[var(--text-muted)]">Timeframe</label>
           <input
             type="text"
             value={(data.timeframe as string) ?? ""}
@@ -212,13 +216,11 @@ function GoalFields({
               onChange({ ...data, timeframe: e.target.value || null })
             }
             placeholder="e.g. this week, Q1"
-            className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 placeholder:text-neutral-600 focus:border-blue-500 focus:outline-none"
+            className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
           />
         </div>
         <div className="flex-1">
-          <label className="mb-1 block text-xs text-neutral-400">
-            Measurable
-          </label>
+          <label className="mb-1 block text-xs text-[var(--text-muted)]">Measurable</label>
           <input
             type="text"
             value={(data.measurable as string) ?? ""}
@@ -226,7 +228,7 @@ function GoalFields({
               onChange({ ...data, measurable: e.target.value || null })
             }
             placeholder="How to measure success"
-            className="w-full rounded border border-neutral-700 bg-neutral-800 px-3 py-1.5 text-sm text-neutral-100 placeholder:text-neutral-600 focus:border-blue-500 focus:outline-none"
+            className="input-glass w-full rounded-lg px-3 py-1.5 text-sm"
           />
         </div>
       </div>
@@ -310,40 +312,40 @@ export function PushConfirmCard({
   const acceptLabel = itemCount > 1 ? `Accept All (${itemCount})` : "Accept";
 
   return (
-    <div className="rounded-lg border border-neutral-700 bg-neutral-900 p-4">
+    <div className="glass-card rounded-xl p-4">
       <div className="mb-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <span className="rounded bg-blue-600/20 px-2 py-0.5 text-xs font-medium text-blue-400">
+          <span className={`rounded-md px-2 py-0.5 text-xs font-medium ${modeChipClass[action.mode] ?? modeChipClass.uncertain}`}>
             {modeLabel}
           </span>
           {itemCount > 1 && (
-            <span className="rounded bg-neutral-700 px-2 py-0.5 text-xs font-medium text-neutral-300">
+            <span className="badge-glass rounded-md px-2 py-0.5 text-xs font-medium text-[var(--text-secondary)]">
               {itemCount} items
             </span>
           )}
-          <span className="text-xs text-neutral-500">
-            {confidencePct}% confidence
+          <span className="text-xs text-[var(--text-muted)]">
+            {confidencePct}%
           </span>
         </div>
       </div>
 
-      <p className="mb-2 text-sm text-neutral-100">{action.summary}</p>
+      <p className="mb-2 text-sm text-[var(--text-primary)]">{action.summary}</p>
 
       {isMultiMode && items.length > 0 && (
         <div className="mb-3 space-y-3">
           {items.map((item, index) => (
             <div
               key={index}
-              className="rounded border border-neutral-700/50 bg-neutral-800/50 p-3"
+              className="glass rounded-lg p-3"
             >
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-xs font-medium text-neutral-400">
+                <span className="text-xs font-medium text-[var(--text-muted)] font-[family-name:var(--font-mono)]">
                   #{index + 1}
                 </span>
                 {items.length > 1 && (
                   <button
                     onClick={() => removeItem(index)}
-                    className="rounded px-2 py-0.5 text-[10px] text-red-400 transition hover:bg-red-900/20 hover:text-red-300"
+                    className="chip-red rounded-md px-2 py-0.5 text-[10px] transition-all hover:brightness-125"
                   >
                     Remove
                   </button>
@@ -356,12 +358,12 @@ export function PushConfirmCard({
       )}
 
       {!isMultiMode && (
-        <p className="mb-4 text-xs text-neutral-400">
+        <p className="mb-4 text-xs text-[var(--text-muted)]">
           Proposed: {action.proposed_action}
         </p>
       )}
 
-      <div className="mb-3 rounded bg-neutral-800 px-3 py-2 text-xs text-neutral-400">
+      <div className="mb-3 glass rounded-lg px-3 py-2 text-xs text-[var(--text-muted)] italic">
         &quot;{originalTranscript}&quot;
       </div>
 
@@ -369,19 +371,19 @@ export function PushConfirmCard({
         <button
           onClick={() => onAccept(editedData)}
           disabled={isMultiMode && itemCount === 0}
-          className="rounded bg-blue-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="btn-gradient rounded-lg px-4 py-1.5 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {acceptLabel}
         </button>
         <button
           onClick={onEdit}
-          className="rounded bg-neutral-700 px-4 py-1.5 text-sm font-medium text-neutral-200 transition hover:bg-neutral-600"
+          className="btn-glass rounded-lg px-4 py-1.5 text-sm font-medium"
         >
           Edit
         </button>
         <button
           onClick={onReject}
-          className="rounded px-4 py-1.5 text-sm text-neutral-400 transition hover:text-neutral-200"
+          className="rounded-lg px-4 py-1.5 text-sm text-[var(--text-muted)] transition hover:text-[var(--text-primary)]"
         >
           Reject
         </button>

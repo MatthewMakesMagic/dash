@@ -11,10 +11,10 @@ interface Goal {
   created_at: string;
 }
 
-const statusColors: Record<string, string> = {
-  active: "bg-green-600/20 text-green-400",
-  completed: "bg-blue-600/20 text-blue-400",
-  abandoned: "bg-neutral-600/20 text-neutral-400",
+const statusChip: Record<string, string> = {
+  active: "chip-green",
+  completed: "chip-cyan",
+  abandoned: "badge-glass text-[var(--text-muted)]",
 };
 
 export default function GoalsPage() {
@@ -58,7 +58,7 @@ export default function GoalsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center pt-24 text-neutral-500">
+      <div className="flex items-center justify-center pt-24 text-[var(--text-muted)]">
         Loading...
       </div>
     );
@@ -66,31 +66,37 @@ export default function GoalsPage() {
 
   return (
     <div className="mx-auto max-w-3xl">
-      <h1 className="mb-6 text-2xl font-semibold">Goals</h1>
+      <h1 className="mb-1 text-2xl font-bold font-[family-name:var(--font-mono)]">
+        <span className="gradient-text">Goals</span>
+      </h1>
+      <div className="gradient-line mb-6 w-16" />
+
       {goals.length === 0 ? (
-        <p className="text-neutral-500">No goals yet.</p>
+        <div className="glass rounded-xl py-12 text-center text-[var(--text-muted)]">
+          No goals yet.
+        </div>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {goals.map((goal) => (
             <div
               key={goal.id}
-              className="rounded-lg border border-neutral-800 bg-neutral-900 p-4"
+              className="glass-card rounded-xl p-4"
             >
               <div className="mb-2 flex items-center justify-between">
-                <h3 className="font-medium text-neutral-100">{goal.title}</h3>
+                <h3 className="font-medium text-[var(--text-primary)]">{goal.title}</h3>
                 <span
-                  className={`rounded px-2 py-0.5 text-xs font-medium ${statusColors[goal.status] ?? statusColors.active}`}
+                  className={`rounded-md px-2 py-0.5 text-xs font-medium ${statusChip[goal.status] ?? statusChip.active}`}
                 >
                   {goal.status}
                 </span>
               </div>
               {goal.timeframe && (
-                <p className="mb-1 text-xs text-neutral-400">
+                <p className="mb-1 text-xs text-[var(--text-muted)]">
                   Timeframe: {goal.timeframe}
                 </p>
               )}
               {goal.measurable && (
-                <p className="mb-3 text-xs text-neutral-400">
+                <p className="mb-3 text-xs text-[var(--text-muted)]">
                   Measure: {goal.measurable}
                 </p>
               )}
@@ -98,7 +104,7 @@ export default function GoalsPage() {
                 {goal.status !== "completed" && (
                   <button
                     onClick={() => updateStatus(goal.id, "completed")}
-                    className="rounded px-2 py-0.5 text-[10px] text-neutral-400 transition hover:bg-neutral-800 hover:text-green-400"
+                    className="rounded-md px-2 py-0.5 text-[10px] text-[var(--text-muted)] transition hover:bg-[rgba(255,255,255,0.06)] hover:text-[#4ade80]"
                   >
                     Complete
                   </button>
@@ -106,7 +112,7 @@ export default function GoalsPage() {
                 {goal.status !== "active" && (
                   <button
                     onClick={() => updateStatus(goal.id, "active")}
-                    className="rounded px-2 py-0.5 text-[10px] text-neutral-400 transition hover:bg-neutral-800 hover:text-neutral-200"
+                    className="rounded-md px-2 py-0.5 text-[10px] text-[var(--text-muted)] transition hover:bg-[rgba(255,255,255,0.06)] hover:text-[var(--text-primary)]"
                   >
                     Reactivate
                   </button>
@@ -114,7 +120,7 @@ export default function GoalsPage() {
                 {goal.status !== "abandoned" && (
                   <button
                     onClick={() => updateStatus(goal.id, "abandoned")}
-                    className="rounded px-2 py-0.5 text-[10px] text-neutral-400 transition hover:bg-neutral-800 hover:text-red-400"
+                    className="rounded-md px-2 py-0.5 text-[10px] text-[var(--text-muted)] transition hover:bg-[rgba(255,255,255,0.06)] hover:text-[#f87171]"
                   >
                     Abandon
                   </button>

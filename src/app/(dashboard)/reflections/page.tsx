@@ -10,15 +10,15 @@ interface Reflection {
   created_at: string;
 }
 
-const moodColors: Record<string, string> = {
-  energized: "text-green-400",
-  calm: "text-blue-400",
-  focused: "text-cyan-400",
-  happy: "text-yellow-400",
-  frustrated: "text-red-400",
-  tired: "text-neutral-400",
-  anxious: "text-orange-400",
-  grateful: "text-purple-400",
+const moodChip: Record<string, string> = {
+  energized: "chip-green",
+  calm: "chip-cyan",
+  focused: "chip-cyan",
+  happy: "chip-amber",
+  frustrated: "chip-red",
+  tired: "badge-glass text-[var(--text-muted)]",
+  anxious: "chip-orange",
+  grateful: "chip-violet",
 };
 
 export default function ReflectionsPage() {
@@ -45,7 +45,7 @@ export default function ReflectionsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center pt-24 text-neutral-500">
+      <div className="flex items-center justify-center pt-24 text-[var(--text-muted)]">
         Loading...
       </div>
     );
@@ -53,25 +53,31 @@ export default function ReflectionsPage() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-6 text-2xl font-semibold">Reflections</h1>
+      <h1 className="mb-1 text-2xl font-bold font-[family-name:var(--font-mono)]">
+        <span className="gradient-text">Reflections</span>
+      </h1>
+      <div className="gradient-line mb-6 w-16" />
+
       {reflections.length === 0 ? (
-        <p className="text-neutral-500">No reflections yet.</p>
+        <div className="glass rounded-xl py-12 text-center text-[var(--text-muted)]">
+          No reflections yet.
+        </div>
       ) : (
         <div className="space-y-4">
           {reflections.map((ref) => (
             <div
               key={ref.id}
-              className="rounded-lg border border-neutral-800 bg-neutral-900 p-4"
+              className="glass-card rounded-xl p-4"
             >
               <div className="mb-2 flex items-center gap-2">
                 {ref.mood && (
                   <span
-                    className={`text-sm font-medium ${moodColors[ref.mood] ?? "text-neutral-300"}`}
+                    className={`rounded-md px-2 py-0.5 text-xs font-medium ${moodChip[ref.mood] ?? "chip-violet"}`}
                   >
                     {ref.mood}
                   </span>
                 )}
-                <span className="ml-auto text-xs text-neutral-600">
+                <span className="ml-auto text-xs text-[var(--text-muted)]">
                   {new Date(ref.created_at).toLocaleDateString("en-US", {
                     weekday: "short",
                     month: "short",
@@ -81,13 +87,13 @@ export default function ReflectionsPage() {
                   })}
                 </span>
               </div>
-              <p className="mb-2 text-sm text-neutral-200">{ref.summary}</p>
+              <p className="mb-2 text-sm text-[var(--text-primary)]">{ref.summary}</p>
               {ref.tags && ref.tags.length > 0 && (
                 <div className="flex flex-wrap gap-1">
                   {ref.tags.map((tag) => (
                     <span
                       key={tag}
-                      className="rounded-full bg-neutral-800 px-2 py-0.5 text-[10px] text-neutral-400"
+                      className="badge-glass rounded-full px-2.5 py-0.5 text-[10px] text-[var(--text-secondary)]"
                     >
                       {tag}
                     </span>

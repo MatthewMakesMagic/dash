@@ -128,7 +128,6 @@ export function VoiceCapture() {
   const handleAccept = useCallback(
     async (editedData: Record<string, unknown>) => {
       if (!proposedAction?.id) {
-        // No capture ID — fallback to local log
         if (proposedAction) {
           setActionLog((prev) => [
             { transcript: sentTranscript, action: proposedAction, status: "accepted" },
@@ -151,7 +150,6 @@ export function VoiceCapture() {
           ...prev,
         ]);
       } catch {
-        // Still log locally on error
         if (proposedAction) {
           setActionLog((prev) => [
             { transcript: sentTranscript, action: proposedAction, status: "accept_failed" },
@@ -172,7 +170,7 @@ export function VoiceCapture() {
           method: "POST",
         });
       } catch {
-        // Ignore — reject is best-effort
+        // Ignore
       }
     }
     if (proposedAction) {
@@ -201,7 +199,7 @@ export function VoiceCapture() {
 
   if (!isSupported) {
     return (
-      <div className="rounded-lg border border-yellow-700 bg-yellow-900/20 p-4 text-sm text-yellow-300">
+      <div className="chip-amber rounded-xl p-4 text-sm">
         Voice capture is not supported in this browser. Try Chrome or Safari.
       </div>
     );
@@ -217,10 +215,10 @@ export function VoiceCapture() {
           audioLevel={audioLevel}
         />
         {!isRecording && (
-          <span className="text-xs text-neutral-500">
+          <span className="text-xs text-[var(--text-muted)]">
             via {source === "web-speech" ? "Web Speech API" : "Deepgram"}
             {" · hold "}
-            <kbd className="rounded border border-neutral-700 px-1 py-0.5 text-[10px]">
+            <kbd className="badge-glass rounded px-1.5 py-0.5 text-[10px] font-[family-name:var(--font-mono)]">
               V
             </kbd>
             {" to talk"}
@@ -232,10 +230,10 @@ export function VoiceCapture() {
       <div className="flex gap-3">
         <button
           onClick={toggleRecording}
-          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition ${
+          className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-full transition-all duration-200 ${
             isRecording
-              ? "bg-red-600 text-white shadow-lg shadow-red-600/25 hover:bg-red-500"
-              : "bg-neutral-800 text-neutral-300 hover:bg-neutral-700"
+              ? "bg-red-500/80 text-white animate-pulse-glow"
+              : "btn-glass"
           }`}
           aria-label={isRecording ? "Stop recording" : "Start recording"}
         >
@@ -264,7 +262,7 @@ export function VoiceCapture() {
 
       {/* Send button */}
       <div className="flex items-center justify-between">
-        <span className="text-xs text-neutral-500">
+        <span className="text-xs text-[var(--text-muted)]">
           {isRecording
             ? "Speak now..."
             : "Press Enter to send, Shift+Enter for newline"}
@@ -272,7 +270,7 @@ export function VoiceCapture() {
         <button
           onClick={() => handleSend(transcript + interimText)}
           disabled={!(transcript + interimText).trim() || isProcessing}
-          className="rounded bg-blue-600 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-blue-500 disabled:opacity-40 disabled:hover:bg-blue-600"
+          className="btn-gradient rounded-lg px-5 py-2 text-sm font-medium disabled:opacity-40 disabled:cursor-not-allowed"
         >
           {isProcessing ? "Processing..." : "Send"}
         </button>
@@ -281,10 +279,10 @@ export function VoiceCapture() {
       {/* Error */}
       {error && (
         <div
-          className={`rounded px-3 py-2 text-sm ${
+          className={`rounded-xl px-3 py-2 text-sm ${
             error.includes("Using browser speech")
-              ? "bg-yellow-900/30 text-yellow-400"
-              : "bg-red-900/30 text-red-400"
+              ? "chip-amber"
+              : "chip-red"
           }`}
         >
           {error}
@@ -305,24 +303,24 @@ export function VoiceCapture() {
       {/* Action log */}
       {actionLog.length > 0 && (
         <div className="mt-4 space-y-2">
-          <h3 className="text-xs font-medium uppercase tracking-wider text-neutral-500">
+          <h3 className="text-xs font-medium uppercase tracking-widest text-[var(--text-muted)]">
             Recent
           </h3>
           {actionLog.slice(0, 5).map((entry, i) => (
             <div
               key={i}
-              className="rounded border border-neutral-800 bg-neutral-900/50 px-3 py-2 text-xs"
+              className="glass rounded-lg px-3 py-2 text-xs"
             >
               <span
                 className={
                   entry.status === "accepted"
-                    ? "text-green-400"
-                    : "text-neutral-500"
+                    ? "text-[#4ade80]"
+                    : "text-[var(--text-muted)]"
                 }
               >
                 {entry.status === "accepted" ? "+" : "-"}
               </span>{" "}
-              <span className="text-neutral-300">{entry.action.summary}</span>
+              <span className="text-[var(--text-secondary)]">{entry.action.summary}</span>
             </div>
           ))}
         </div>
