@@ -18,9 +18,9 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    if (!process.env.OPENAI_API_KEY) {
+    if (!process.env.ANTHROPIC_API_KEY) {
       return NextResponse.json(
-        { error: "OpenAI API key not configured" },
+        { error: "Anthropic API key not configured" },
         { status: 503 },
       );
     }
@@ -32,9 +32,11 @@ export async function POST(req: NextRequest) {
       id: capture.id,
       ...extraction,
     });
-  } catch {
+  } catch (e) {
+    const message = e instanceof Error ? e.message : "Unknown error";
+    console.error("Capture error:", message);
     return NextResponse.json(
-      { error: "Failed to process capture" },
+      { error: "Failed to process capture", detail: message },
       { status: 500 },
     );
   }

@@ -1,10 +1,10 @@
-import OpenAI from "openai";
+import Anthropic from "@anthropic-ai/sdk";
 
-let client: OpenAI | null = null;
+let client: Anthropic | null = null;
 
-export function getOpenAIClient(): OpenAI {
+export function getAnthropicClient(): Anthropic {
   if (!client) {
-    client = new OpenAI();
+    client = new Anthropic();
   }
   return client;
 }

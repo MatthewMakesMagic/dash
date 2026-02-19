@@ -1,4 +1,4 @@
-import { getOpenAIClient } from "./client";
+import { getAnthropicClient } from "./client";
 import type { CaptureContext } from "./classify-intent";
 
 export interface StructuredExtraction {
@@ -38,7 +38,7 @@ export interface GoalData {
 const SYSTEM_PROMPT = `You are the voice intent classifier and structured data extractor for Dash, a personal productivity system.
 Analyze the user's voice transcription, classify intent, and extract structured fields.
 
-Respond with JSON only:
+Respond with JSON only, no other text:
 {
   "mode": "task_capture" | "reflection" | "conversation" | "command" | "goal_setting" | "status_update" | "uncertain",
   "confidence": 0.0 to 1.0,
@@ -66,7 +66,7 @@ export async function extractStructured(
   transcript: string,
   context: CaptureContext,
 ): Promise<StructuredExtraction> {
-  const openai = getOpenAIClient();
+  const anthropic = getAnthropicClient();
 
   const timeOfDay = context.time
     ? new Date(context.time).toLocaleTimeString("en-US", {
@@ -83,20 +83,30 @@ export async function extractStructured(
 
 Transcript: "${transcript}"`;
 
-  const response = await openai.chat.completions.create({
-    model: "gpt-4o-mini",
+  const response = await anthropic.messages.create({
+    model: "claude-haiku-4-5-20251001",
     max_tokens: 512,
-    response_format: { type: "json_object" },
-    messages: [
-      { role: "system", content: SYSTEM_PROMPT },
-      { role: "user", content: userMessage },
-    ],
+    system: SYSTEM_PROMPT,
+    messages: [{ role: "user", content: userMessage }],
   });
 
-  const text = response.choices[0]?.message?.content ?? "";
+  const text =
+    response.content[0]?.type === "text" ? response.content[0].text : "";
+
+  // Extract JSON from response (handle potential markdown wrapping)
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    return {
+      mode: "uncertain",
+      confidence: 0,
+      summary: transcript,
+      proposed_action: "Could not parse LLM response",
+      structured_data: {},
+    };
+  }
 
   try {
-    return JSON.parse(text) as StructuredExtraction;
+    return JSON.parse(jsonMatch[0]) as StructuredExtraction;
   } catch {
     return {
       mode: "uncertain",
