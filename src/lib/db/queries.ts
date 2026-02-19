@@ -1,18 +1,24 @@
 import { eq, isNull, desc } from "drizzle-orm";
 import { db } from "./index";
 import { captures, tasks, reflections, goals } from "./schema";
-import type {
-  StructuredExtraction,
-  TaskData,
-  ReflectionData,
-  GoalData,
+import {
+  normalizeStructuredData,
+  type TaskData,
+  type ReflectionData,
+  type GoalData,
 } from "../llm/extract-structured";
 
 // --- Captures ---
 
 export async function createCapture(
   transcript: string,
-  extraction: StructuredExtraction,
+  extraction: {
+    mode: string;
+    confidence: number;
+    summary: string;
+    proposed_action: string;
+    structured_data: Record<string, unknown>;
+  },
 ) {
   const [capture] = await db
     .insert(captures)
@@ -60,9 +66,12 @@ export async function acceptCapture(
 
   if (!capture) throw new Error("Capture not found");
 
-  const data = (editedData ??
+  const rawData = (editedData ??
     capture.structuredData ??
     {}) as Record<string, unknown>;
+
+  // Normalize to array format for backward compat
+  const data = normalizeStructuredData(capture.mode, rawData);
 
   // Update capture status
   await db
@@ -70,51 +79,66 @@ export async function acceptCapture(
     .set({ status: "accepted", structuredData: data, updatedAt: new Date() })
     .where(eq(captures.id, id));
 
-  // Create entity based on mode
+  // Create entities based on mode
+  const entities: Array<{ entity: Record<string, unknown>; type: string }> = [];
+
   switch (capture.mode) {
     case "task_capture": {
-      const taskData = data as unknown as TaskData;
-      const [task] = await db
-        .insert(tasks)
-        .values({
-          captureId: id,
-          title: taskData.title || capture.summary || "Untitled task",
-          dueDate: taskData.due_date || null,
-          priority: taskData.priority || "medium",
-          project: taskData.project || null,
-        })
-        .returning();
-      return { capture, entity: task, type: "task" };
+      const taskItems = ((data as { tasks?: TaskData[] }).tasks ?? []);
+      for (const taskData of taskItems) {
+        const [task] = await db
+          .insert(tasks)
+          .values({
+            captureId: id,
+            title: taskData.title || capture.summary || "Untitled task",
+            dueDate: taskData.due_date || null,
+            priority: taskData.priority || "medium",
+            project: taskData.project || null,
+            recurrence: taskData.recurrence || null,
+            recurrenceEnd: taskData.recurrence_end || null,
+          })
+          .returning();
+        entities.push({ entity: task as unknown as Record<string, unknown>, type: "task" });
+      }
+      break;
     }
     case "reflection": {
-      const refData = data as unknown as ReflectionData;
-      const [reflection] = await db
-        .insert(reflections)
-        .values({
-          captureId: id,
-          summary: refData.summary || capture.summary || "Untitled reflection",
-          mood: refData.mood || null,
-          tags: refData.tags || [],
-        })
-        .returning();
-      return { capture, entity: reflection, type: "reflection" };
+      const refItems = ((data as { reflections?: ReflectionData[] }).reflections ?? []);
+      for (const refData of refItems) {
+        const [reflection] = await db
+          .insert(reflections)
+          .values({
+            captureId: id,
+            summary: refData.summary || capture.summary || "Untitled reflection",
+            mood: refData.mood || null,
+            tags: refData.tags || [],
+          })
+          .returning();
+        entities.push({ entity: reflection as unknown as Record<string, unknown>, type: "reflection" });
+      }
+      break;
     }
     case "goal_setting": {
-      const goalData = data as unknown as GoalData;
-      const [goal] = await db
-        .insert(goals)
-        .values({
-          captureId: id,
-          title: goalData.title || capture.summary || "Untitled goal",
-          timeframe: goalData.timeframe || null,
-          measurable: goalData.measurable || null,
-        })
-        .returning();
-      return { capture, entity: goal, type: "goal" };
+      const goalItems = ((data as { goals?: GoalData[] }).goals ?? []);
+      for (const goalData of goalItems) {
+        const [goal] = await db
+          .insert(goals)
+          .values({
+            captureId: id,
+            title: goalData.title || capture.summary || "Untitled goal",
+            timeframe: goalData.timeframe || null,
+            measurable: goalData.measurable || null,
+          })
+          .returning();
+        entities.push({ entity: goal as unknown as Record<string, unknown>, type: "goal" });
+      }
+      break;
     }
     default:
-      return { capture, entity: null, type: capture.mode };
+      break;
   }
+
+  return { capture, entities, type: capture.mode };
 }
 
 export async function rejectCapture(id: string) {
@@ -138,7 +162,15 @@ export async function getTasks() {
 
 export async function updateTask(
   id: string,
-  data: { status?: string; title?: string; priority?: string; dueDate?: string | null; project?: string | null },
+  data: {
+    status?: string;
+    title?: string;
+    priority?: string;
+    dueDate?: string | null;
+    project?: string | null;
+    recurrence?: string | null;
+    recurrenceEnd?: string | null;
+  },
 ) {
   const [task] = await db
     .update(tasks)

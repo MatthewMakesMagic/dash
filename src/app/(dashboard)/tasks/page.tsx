@@ -9,6 +9,8 @@ interface Task {
   priority: string;
   project: string | null;
   status: string;
+  recurrence: string | null;
+  recurrence_end: string | null;
   created_at: string;
 }
 
@@ -102,6 +104,11 @@ export default function TasksPage() {
                       {task.due_date && (
                         <span className="text-[10px] text-neutral-500">
                           Due {task.due_date}
+                        </span>
+                      )}
+                      {task.recurrence && (
+                        <span className="rounded bg-purple-600/20 px-1.5 py-0.5 text-[10px] font-medium text-purple-400">
+                          {task.recurrence}
                         </span>
                       )}
                       {task.project && (

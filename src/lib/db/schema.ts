@@ -35,6 +35,8 @@ export const tasks = pgTable("tasks", {
   priority: text("priority").default("medium").notNull(),
   project: text("project"),
   status: text("status").default("todo").notNull(),
+  recurrence: text("recurrence"),
+  recurrenceEnd: date("recurrence_end"),
   sortOrder: integer("sort_order").default(0).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()

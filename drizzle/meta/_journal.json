@@ -8,6 +8,13 @@
       "when": 1771401901096,
       "tag": "0000_fancy_red_skull",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771474139268,
+      "tag": "0001_typical_rumiko_fujikawa",
+      "breakpoints": true
     }
   ]
 }
