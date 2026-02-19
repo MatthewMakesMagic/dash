@@ -84,7 +84,7 @@ export async function extractStructured(
 Transcript: "${transcript}"`;
 
   const response = await anthropic.messages.create({
-    model: "claude-haiku-4-5-20251001",
+    model: "claude-sonnet-4-5-20250929",
     max_tokens: 512,
     system: SYSTEM_PROMPT,
     messages: [{ role: "user", content: userMessage }],
